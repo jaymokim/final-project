@@ -9,7 +9,31 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{python}
+import random, math
+from math import *
+from random import *
+import numpy as np
+from numpy import *
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import *
 
+def gibbs(B, T):
+    x = float(np.random.uniform(0, B, 1))
+    y = float(np.random.uniform(0, B, 1))
+    chain = np.zeros((T, 3))
+    chain[:, 0] = range(1, T + 1)
+    for i in range(T):
+        u = float(np.random.uniform(0, 1, 1))
+        v = float(np.random.uniform(0, 1, 1))
+        x = -np.log(1 - u * (1 - np.exp(-y * B))) / y
+        y = -np.log(1 - u * (1 - np.exp(-x * B))) / x
+        chain[i, 1] = x
+        chain[i, 2] = y
+    return(chain)
+
+G1 = gibbs(B = 5, T = 500)
+G2 = gibbs(B = 5, T = 5000)
+G3 = gibbs(B = 5, T = 50000)
 ```
 
 
