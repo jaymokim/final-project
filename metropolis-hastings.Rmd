@@ -26,7 +26,7 @@ posterior <- function(param){
   return (exp(likelihood(param) + prior(param)))
 }
 
-metropolis_MCMC <- function(startvalue, iterations,c){
+metropolis_MCMC <- function(startvalue, iterations, c){
   chain = array(dim = c(iterations+1,1))
   chain[1,] = startvalue
   for (i in 1:iterations){
@@ -46,45 +46,73 @@ chain=metropolis_MCMC(startvalue, 10000, c=1)
 
 test <- rbeta(10000, 6, 4)
 
+# Performance of the sampler: c = 1
+par(mfrow=c(1,3))
 plot(chain, type='l')
-par(mfrow=c(1,2))  
 acf(chain); hist(chain)  
 
+# Comparing the histogram of the chain with the target distribution Beta(6,4)
 par(mfrow=c(1,2))
 hist(test); hist(chain)
+
+# Kolmogorov–Smirnov statistic
+ks.test(chain, test)
+
 par(mfrow=c(1,1))
 
+# c = 0.1 / c - 2.5 / c = 10
 chain1=metropolis_MCMC(startvalue, 10000, c=0.1)
 chain2=metropolis_MCMC(startvalue, 10000, c=2.5)
 chain3=metropolis_MCMC(startvalue, 10000, c=10)
 
+# Putting burnIn in
 burnIn = 5000
 acceptance1 = 1-mean(duplicated(chain1[-(1:burnIn),]))
 acceptance2 = 1-mean(duplicated(chain2[-(1:burnIn),]))
 acceptance3 = 1-mean(duplicated(chain3[-(1:burnIn),]))
 
+# Performance of the sampler: c = 0.1
 par(mfrow=c(1,3))
 plot(chain1, type='l', main = "Trace plot of Chain, c = 0.1")
 acf(chain1, main = "Autocorrelation plot of Chain, c= 0.1")
 hist(chain1, xlab = "Samples from chain", main = "Histogram of Chain, c = 0.1") 
+
+# Comparing the histogram of the chain with the target distribution Beta(6,4)
 par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain1, xlab = "Samples from chain", main = "Histogram of Chain, c = 0.1")
 
+# Kolmogorov–Smirnov statistic
+ks.test(chain1, test)
+
+# Performance of the sampler: c = 2.5
 par(mfrow=c(1,3))
 plot(chain2, type='l', main = "Trace plot of Chain, c = 2.5")
 acf(chain2, main = "Autocorreltion plot of Chain, c = 2.5")
 hist(chain2, xlab = "Samples from chain", main = "Histogram of Chain, c = 2.5")
+
+# Comparing the histogram of the chain with the target distribution Beta(6,4)
 par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain2, xlab = "Samples from chain", main = "Histogram of Chain, c = 2.5")
 
+# Kolmogorov–Smirnov statistic
+ks.test(chain2, test)
+
+# Performance of the sampler: c = 10
 par(mfrow=c(1,3))
 plot(chain3, type='l', main = "Trace plot of Chain, c = 10")
 acf(chain3, main = "Autocorrelation plot of Chain, c = 10")
 hist(chain3, xlab = "Samples from chain", main = "Histogram of Chain, c = 10")
+
+# Comparing the histogram of the chain with the target distribution Beta(6,4)
 par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain3, xlab = "Samples from chain", main = "Histogram of Chain, c = 10")
+
+# Kolmogorov–Smirnov statistic
+ks.test(chain3, test)
+
+
 ```
 
