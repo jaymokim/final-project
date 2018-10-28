@@ -8,7 +8,11 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Metropolis-Hastings
+## Metropolis-Hastings
+
+Our target distribution is Beta(6,4) and our proposal distribution is $\phi_{prop}|\phi_{old} \sim Beta(c\phi_{old}, \; c(1-\phi_{old}))$. 
+First, we implement several functions which will be used in calculating posterior distribution. Here, we define likelihood function which gives the log-likelihood value of the parameter, and also prior function that gives the log density value of the parameter. The density used in the likelihood function is Beta(6,4) since it is our target distribution, and the density used in the prior function is Uniform(0,1) since our start value is from Uniform(0,1). In addition, since the parameters in Beta distribution have to be larger than 0, for c>0, $\phi<1$. 
+
 ```{r}
 a <- 6
 b <- 4
@@ -25,14 +29,18 @@ prior <- function(param){
 posterior <- function(param){
   return (exp(likelihood(param) + prior(param)))
 }
+```
 
+Posterior function can be calculated by multiplying likelihood function and prior function. However, we used log in the likelihood function and the prior function, so we need to convert them by putting $exp$ in the posterior function. 
+
+```{r}
 metropolis_MCMC <- function(startvalue, iterations, c){
   chain = array(dim = c(iterations+1,1))
   chain[1,] = startvalue
   for (i in 1:iterations){
     proposal = rbeta(1, c*chain[i,], c*(1-chain[i,]))
-    probab = (dbeta(proposal,a,b)*dbeta(chain[i,],c*proposal,c*(1-proposal)))/
-      (dbeta(chain[i,],a,b)*dbeta(proposal, c*chain[i,], c*(1-chain[i,])))
+    probab = (posterior(proposal)*dbeta(chain[i,],c*proposal,c*(1-proposal)))/
+      (posterior(chain[i,])*dbeta(proposal, c*chain[i,], c*(1-chain[i,])))
     if (runif(1) < probab){
       chain[i+1,] = proposal
     }else{
@@ -41,12 +49,23 @@ metropolis_MCMC <- function(startvalue, iterations, c){
   }
   return(chain)
 }
+```
 
+After implementing all the functions that are required to obtain a chain, then we can finally define metropolis_MCMC function that can yield a chain. Note that
+
+$$ \phi_{new} = \phi_{proposal} \;\; with \;\; probability \;\; \alpha(\phi_{old}, \phi_{new}) $$
+             $$ = \phi_{old} \;\; with \;\; probaility \;\; 1-\alpha(\phi_{old}, \phi_{new}) $$
+where $\alpha(\phi_{old}, \phi_{new}) = min(1, \frac{p(\phi_{new})q(\phi_{old}|\phi_{new})}{p(\phi_{old})q(\phi_{new}|\phi_{old})})$. Here, $p(\phi)$ is the posterior function, and $q(\phi_{new}|\phi_{old})$ is our proposal functions that follows $Beta(c\phi_{old}, \; c(1-\phi_{old}))$. Since Beta distribution is asymmetric, the probability form cannot be simplified to the ratio of posterior functions. Hence, we need to calculate the probabiltiy by using posterior functions and proposal functions. 
+
+Next, we can finally get the chain using metropolis_MCMC function with the startvalue generated from Uniform(0,1). We also generate random values from Beta(6,4) for the comparison.
+
+```{r}
 startvalue <- runif(1, 0, 1)
 chain=metropolis_MCMC(startvalue, 10000, c=1)
-
 test <- rbeta(10000, 6, 4)
+```
 
+```{r}
 # Performance of the sampler: c = 1
 par(mfrow=c(1,3))
 plot(chain, type='l', main = "Trace plot of Chain, c = 1")
@@ -73,8 +92,11 @@ abline(v=0.6, col="red")
 
 # Kolmogorov-Smirnov statistic
 ks.test(chain[-(1:burnIn),1], test2)
+```
 
 
+
+```{r}
 # c = 0.1 / c = 2.5 / c = 10
 chain1=metropolis_MCMC(startvalue, 10000, c=0.1)
 chain2=metropolis_MCMC(startvalue, 10000, c=2.5)
