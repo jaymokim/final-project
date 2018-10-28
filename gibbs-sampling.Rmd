@@ -34,6 +34,11 @@ def gibbs(B, T):
 G1 = gibbs(B = 5, T = 500)
 G2 = gibbs(B = 5, T = 5000)
 G3 = gibbs(B = 5, T = 50000)
+
+xx = G1[:,1]
+n,bins,patches = plt.hist(xx, facecolor='blue', alpha=0.5)
+plt.show()
+
 ```
 
 
