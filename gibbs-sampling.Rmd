@@ -8,7 +8,9 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
 ```{python}
+# Question 1
 import random, math
 from math import *
 from random import *
@@ -26,11 +28,12 @@ def gibbs(B, T):
         u = float(np.random.uniform(0, 1, 1))
         v = float(np.random.uniform(0, 1, 1))
         x = -np.log(1 - u * (1 - np.exp(-y * B))) / y
-        y = -np.log(1 - u * (1 - np.exp(-x * B))) / x
+        y = -np.log(1 - v * (1 - np.exp(-x * B))) / x
         chain[i, 1] = x
         chain[i, 2] = y
     return(chain)
 
+# Question 2
 G1 = gibbs(B = 5, T = 500)
 G2 = gibbs(B = 5, T = 5000)
 G3 = gibbs(B = 5, T = 50000)
@@ -38,10 +41,6 @@ G3 = gibbs(B = 5, T = 50000)
 xx = G1[:,1]
 x2 = G2[:,1]
 x3 = G3[:,1]
-
-print("Estimate of the expectation using 500 samples:", round(mean(xx), 4))
-print("Estimate of the expectation using 5000 samples:", round(mean(x2), 4))
-print("Estimate of the expectation using 50000 samples:", round(mean(x3), 4))
 
 n,bins,patches = plt.hist(xx, facecolor='blue', alpha=0.5)
 plt.xlabel('x')
@@ -61,6 +60,10 @@ plt.ylabel('Frequency')
 plt.title(r'Histogram of x for T=50000')
 plt.show()
 
+# Question 3
+print("Estimate of the expectation for T = 500:", round(mean(xx), 4))
+print("Estimate of the expectation for T = 5000:", round(mean(x2), 4))
+print("Estimate of the expectation for T = 50000:", round(mean(x3), 4))
 ```
 
 
