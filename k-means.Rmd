@@ -71,7 +71,7 @@ install.packages("cluster")
 install.packages("fpc")
 library(cluster)
 library(fpc)
-cluster <- initial(wine[-1])
+cluster <- kmeans_ft(wine[-1])
 plotcluster(wine[-1], cluster$new_group)
 
 ```

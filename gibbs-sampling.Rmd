@@ -39,6 +39,10 @@ xx = G1[:,1]
 x2 = G2[:,1]
 x3 = G3[:,1]
 
+print("Estimate of the expectation using 500 samples:", round(mean(xx), 4))
+print("Estimate of the expectation using 5000 samples:", round(mean(x2), 4))
+print("Estimate of the expectation using 50000 samples:", round(mean(x3), 4))
+
 n,bins,patches = plt.hist(xx, facecolor='blue', alpha=0.5)
 plt.xlabel('x')
 plt.ylabel('Frequency')
