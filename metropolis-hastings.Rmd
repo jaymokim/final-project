@@ -46,31 +46,21 @@ chain=metropolis_MCMC(startvalue, 10000, c=1)
 
 test <- rbeta(10000, 6, 4)
 
-<<<<<<< HEAD
 # Performance of the sampler: c = 1
 par(mfrow=c(1,3))
-plot(chain, type='l')
-acf(chain); hist(chain)  
-=======
-par(mfrow=c(1,3))  
 plot(chain, type='l', main = "Trace plot of Chain, c = 1")
 acf(chain, main = "Autocorrelation plot of Chain, c = 1")
 hist(chain, xlab = "Samples from chain", main = "Histogram of Chain, c = 1")  
->>>>>>> ddbd5452204a5ec74887cf29589e22aa15b5aef1
 
 # Comparing the histogram of the chain with the target distribution Beta(6,4)
 par(mfrow=c(1,2))
-<<<<<<< HEAD
-hist(test); hist(chain)
+hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
+hist(chain, xlab = "Samples from Chain", main = "Histogram of Chain, c = 1")
 
 # Kolmogorov–Smirnov statistic
 ks.test(chain, test)
 
 par(mfrow=c(1,1))
-=======
-hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
-hist(chain, xlab = "Samples from Chain", main = "Histogram of Chain, c = 1")
->>>>>>> ddbd5452204a5ec74887cf29589e22aa15b5aef1
 
 # c = 0.1 / c - 2.5 / c = 10
 chain1=metropolis_MCMC(startvalue, 10000, c=0.1)
