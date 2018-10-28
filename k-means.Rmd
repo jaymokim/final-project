@@ -4,11 +4,78 @@ author: "Seung Ah Ha, Jaymo Kim, Wonbin Song"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ```{r}
+install.packages('rattle')
+data(wine, package="rattle")
 
+cluster <- function(data){
+  mat.data <- data.matrix(data)
+  n.row <- nrow(mat.data)
+  n.col <- ncol(mat.data)
+  
+  # randomly assigning a group label
+  G.label <- rep(0,n.row)
+  for(i in 1:n.row){
+    G.label[i] <- sample(1:3,1)
+  }
+  new.data <- cbind(G.label,mat.data)
+  
+  # function that calculates the group centres
+  mu <- function(new.data){
+    mat.mu <- matrix(0,3,(n.col+1))
+    for(j in 2:(n.col+1)){
+      for(i in 1:3){
+        mat.mu[i,j] <- mean(new.data[G.label==i,j])
+      }
+    }
+    mat.mu[1,1]<- 1
+    mat.mu[2,1]<- 2
+    mat.mu[3,1]<- 3
+    return(mat.mu)
+  }
+  mat.mu <- mu(new.data)
+  
+  
+  # re-assign
+  re.assign <- function(mat.mu){
+    distance <- matrix(0,n.row,3)
+    new.label <- rep(0,n.row)
+    for(i in 1:n.row){
+      for(j in 2:(n.col+1)){
+        distance[i,1] <- sqrt(sum((new.data[i,j]-mat.mu[1,j])^2))
+        distance[i,2] <- sqrt(sum((new.data[i,j]-mat.mu[2,j])^2))
+        distance[i,3] <- sqrt(sum((new.data[i,j]-mat.mu[3,j])^2))
+      }
+    }
+    for (i in 1:n.row){
+      new.label[i] <- which(distance[i,]==min(distance[i,]))
+    }
+    return(new.label)
+  }
+  
+  new.label <- re.assign(mat.mu)
+  
+  iterate <- function(label){
+    new.data <- cbind(label, mat.data)
+    mat.mu <- mu(new.data)
+    label <- re.assign(mat.mu)
+    return(label)
+  }
+  
+  iter.label <- iterate(new.label)
+  
+  n.iter <- 1
+  while(all(new.label == iter.label)==F){
+    n.iter <- n.iter +1
+    new.label <- iterate(new.label)
+    if(all(new.label == iter.label)==T) break
+  }
+  
+  
+  return(list(labels=new.label, centres=mu(cbind(new.label,mat.data)), nb.iter=n.iter))
+}
+
+cluster(wine)
+kmeasn(wine,3)
 ```
 
