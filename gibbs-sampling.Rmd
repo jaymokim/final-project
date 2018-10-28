@@ -36,7 +36,25 @@ G2 = gibbs(B = 5, T = 5000)
 G3 = gibbs(B = 5, T = 50000)
 
 xx = G1[:,1]
+x2 = G2[:,1]
+x3 = G3[:,1]
+
 n,bins,patches = plt.hist(xx, facecolor='blue', alpha=0.5)
+plt.xlabel('x')
+plt.ylabel('Frequency')
+plt.title(r'Histogram of x for T=500')
+plt.show()
+
+n,bins,patches = plt.hist(x2, facecolor='blue', alpha=0.5)
+plt.xlabel('x')
+plt.ylabel('Frequency')
+plt.title(r'Histogram of x for T=5000')
+plt.show()
+
+n,bins,patches = plt.hist(x3, facecolor='blue', alpha=0.5)
+plt.xlabel('x')
+plt.ylabel('Frequency')
+plt.title(r'Histogram of x for T=50000')
 plt.show()
 
 ```
