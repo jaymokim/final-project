@@ -1,0 +1,14 @@
+---
+title: "K-Means"
+author: "Seung Ah Ha, Jaymo Kim, Wonbin Song"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+```
+
