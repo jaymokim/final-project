@@ -5,10 +5,7 @@ output: pdf_document
 ---
 
 ```{r}
-install.packages('rattle')
-data(wine, package="rattle")
-
-cluster <- function(data){
+assign <- function(data){
   mat.data <- data.matrix(data)
   n.row <- nrow(mat.data)
   n.col <- ncol(mat.data)
@@ -20,62 +17,69 @@ cluster <- function(data){
   }
   new.data <- cbind(G.label,mat.data)
   
-  # function that calculates the group centres
-  mu <- function(new.data){
-    mat.mu <- matrix(0,3,(n.col+1))
+  # calculates the group centres
+  mat.mu <- matrix(0,3,(n.col+1))
+  for(j in 2:(n.col+1)){
+    for(i in 1:3){
+      mat.mu[i,j] <- mean(new.data[G.label==i,j])
+    }
+  }
+  mat.mu[1,1]<- 1
+  mat.mu[2,1]<- 2
+  mat.mu[3,1]<- 3
+  
+  distance <- matrix(0,n.row,3)
+  new.label <- rep(0,n.row)
+  for(i in 1:n.row){
     for(j in 2:(n.col+1)){
-      for(i in 1:3){
-        mat.mu[i,j] <- mean(new.data[G.label==i,j])
-      }
+      distance[i,1] <- sqrt(sum((new.data[i,j]-mat.mu[1,j])^2))
+      distance[i,2] <- sqrt(sum((new.data[i,j]-mat.mu[2,j])^2))
+      distance[i,3] <- sqrt(sum((new.data[i,j]-mat.mu[3,j])^2))
     }
-    mat.mu[1,1]<- 1
-    mat.mu[2,1]<- 2
-    mat.mu[3,1]<- 3
-    return(mat.mu)
   }
-  mat.mu <- mu(new.data)
-  
-  
-  # re-assign
-  re.assign <- function(mat.mu){
-    distance <- matrix(0,n.row,3)
-    new.label <- rep(0,n.row)
-    for(i in 1:n.row){
-      for(j in 2:(n.col+1)){
-        distance[i,1] <- sqrt(sum((new.data[i,j]-mat.mu[1,j])^2))
-        distance[i,2] <- sqrt(sum((new.data[i,j]-mat.mu[2,j])^2))
-        distance[i,3] <- sqrt(sum((new.data[i,j]-mat.mu[3,j])^2))
-      }
-    }
-    for (i in 1:n.row){
-      new.label[i] <- which(distance[i,]==min(distance[i,]))
-    }
-    return(new.label)
+  for (i in 1:n.row){
+    new.label[i] <- which(distance[i,]==min(distance[i,]))
   }
-  
-  new.label <- re.assign(mat.mu)
-  
-  iterate <- function(label){
-    new.data <- cbind(label, mat.data)
-    mat.mu <- mu(new.data)
-    label <- re.assign(mat.mu)
-    return(label)
-  }
-  
-  iter.label <- iterate(new.label)
-  
-  n.iter <- 1
-  while(all(new.label == iter.label)==F){
-    n.iter <- n.iter +1
-    new.label <- iterate(new.label)
-    if(all(new.label == iter.label)==T) break
-  }
-  
-  
-  return(list(labels=new.label, centres=mu(cbind(new.label,mat.data)), nb.iter=n.iter))
+  return(new.label)
 }
 
-cluster(wine)
-kmeasn(wine,3)
+re.assign <- function(data){
+  mat.data <- data.matrix(data)
+  n.row <- nrow(mat.data)
+  n.col <- ncol(mat.data)
+  
+  new.data <- cbind(assign(data),mat.data)
+  mat.mu <- matrix(0,3,(n.col+1))
+  for(j in 2:(n.col+1)){
+    for(i in 1:3){
+      mat.mu[i,j] <- mean(new.data[new.data[,1]==i,j])
+    }
+  }
+  mat.mu[1,1]<- 1
+  mat.mu[2,1]<- 2
+  mat.mu[3,1]<- 3
+  
+  distance <- matrix(0,n.row,3)
+  new.label <- rep(0,n.row)
+  for(i in 1:n.row){
+    for(j in 2:(n.col+1)){
+      distance[i,1] <- sqrt(sum((new.data[i,j]-mat.mu[1,j])^2))
+      distance[i,2] <- sqrt(sum((new.data[i,j]-mat.mu[2,j])^2))
+      distance[i,3] <- sqrt(sum((new.data[i,j]-mat.mu[3,j])^2))
+    }
+  }
+  for (i in 1:n.row){
+    new.label[i] <- which(distance[i,]==min(distance[i,]))
+  }
+  return(new.label)
+}
+
+
+n.iter <- 1
+while(all(assign(data) == re.assign(data))==F){
+  n.iter <- n.iter +1
+  assign(data) <- re.assign(data)
+  if(all(assign(data) == re.assign(data))==T) break
+}
 ```
 
