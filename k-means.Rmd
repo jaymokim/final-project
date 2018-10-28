@@ -9,32 +9,7 @@ output: pdf_document
 install.packages('rattle')
 data(wine, package="rattle")
 
-# assign <- function(data){
-initial <- function(data)
-{
-    mat.data <- data.matrix(data)
-    n.row <- nrow(mat.data)
-    n.col <- ncol(mat.data)
-    
-    # randomly assigning a group label
-    G.label <- rep(0,n.row)
-    for(i in 1:n.row){
-        G.label[i] <- sample(1:3,1)
-    }
-    new.data <- cbind(G.label,mat.data)
-    
-    new.l <- foo(mat.data, n.row, n.col, G.label, new.data)
-    n.iter <- 1
-    while(any(new.l != G.label))
-    {
-        G.label <- new.l
-        new.l <- foo(mat.data, n.row, n.col, G.label, new.data)
-        n.iter <- n.iter + 1
-    }
-    return(list(number_of_iter = n.iter, new_group = new.l))
-}
-
-foo <- function(mat.data, n.row, n.col, G.label, new.data)
+initialft <- function(mat.data, n.row, n.col, G.label, new.data)
 {
     # calculates the group centres
     mat.mu <- matrix(0,3,(n.col+1))
@@ -64,9 +39,33 @@ foo <- function(mat.data, n.row, n.col, G.label, new.data)
     return(new.label)
 }
 
+kmeans_ft <- function(data)
+{
+    mat.data <- data.matrix(data)
+    n.row <- nrow(mat.data)
+    n.col <- ncol(mat.data)
+    
+    # randomly assigning a group label
+    G.label <- rep(0,n.row)
+    for(i in 1:n.row){
+        G.label[i] <- sample(1:3,1)
+    }
+    new.data <- cbind(G.label,mat.data)
+    
+    new.l <- initialft(mat.data, n.row, n.col, G.label, new.data)
+    n.iter <- 1
+    while(any(new.l != G.label))
+    {
+        G.label <- new.l
+        new.l <- initialft(mat.data, n.row, n.col, G.label, new.data)
+        n.iter <- n.iter + 1
+    }
+    return(list(number_of_iter = n.iter, new_group = new.l))
+}
 
-initial(wine) 
-kmeans(wine, 3)
+
+kmeans_ft(wine[-1]) 
+kmeans(wine[-1], 3)
 
 install.packages("cluster")
 install.packages("fpc")
