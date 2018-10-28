@@ -57,7 +57,7 @@ par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain, xlab = "Samples from Chain", main = "Histogram of Chain, c = 1")
 
-# Kolmogorov–Smirnov statistic
+# Kolmogorov?��Smirnov statistic
 ks.test(chain, test)
 
 par(mfrow=c(1,1))
@@ -84,7 +84,7 @@ par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain1, xlab = "Samples from chain", main = "Histogram of Chain, c = 0.1")
 
-# Kolmogorov–Smirnov statistic
+# Kolmogorov-Smirnov statistic
 ks.test(chain1, test)
 
 # Performance of the sampler: c = 2.5
@@ -98,7 +98,7 @@ par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain2, xlab = "Samples from chain", main = "Histogram of Chain, c = 2.5")
 
-# Kolmogorov–Smirnov statistic
+# Kolmogorov-Smirnov statistic
 ks.test(chain2, test)
 
 # Performance of the sampler: c = 10
@@ -112,7 +112,7 @@ par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain3, xlab = "Samples from chain", main = "Histogram of Chain, c = 10")
 
-# Kolmogorov–Smirnov statistic
+# Kolmogorov-Smirnov statistic
 ks.test(chain3, test)
 
 
