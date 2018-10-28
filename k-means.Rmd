@@ -74,5 +74,24 @@ library(fpc)
 cluster <- kmeans_ft(wine[-1])
 plotcluster(wine[-1], cluster$new_group)
 
+wine[,1][which(kmeans_ft(wine[-1])$new_group==1)]
+wine[,1][which(kmeans_ft(wine[-1])$new_group==2)]
+wine[,1][which(kmeans_ft(wine[-1])$new_group==3)]
+
+data.train <- scale(wine[-1])
+kmeans_ft(data.train)
+wine[,1][which(kmeans_ft(data.train)$new_group==1)]
+wine[,1][which(kmeans_ft(data.train)$new_group==2)]
+wine[,1][which(kmeans_ft(data.train)$new_group==3)]
+
+kmeans_ft(iris[,1:4])
+iris[,5][which(kmeans_ft(iris[,1:4])$new_group==1)]
+iris[,5][which(kmeans_ft(iris[,1:4])$new_group==2)]
+iris[,5][which(kmeans_ft(iris[,1:4])$new_group==3)]
+
+kmeans_ft(scale(iris[,1:4]))
+iris[,5][which(kmeans_ft(scale(iris[,1:4]))$new_group==1)]
+iris[,5][which(kmeans_ft(scale(iris[,1:4]))$new_group==2)]
+iris[,5][which(kmeans_ft(scale(iris[,1:4]))$new_group==3)]
 ```
 
