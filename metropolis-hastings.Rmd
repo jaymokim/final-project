@@ -77,6 +77,9 @@ acf(chain[-(1:burnIn),1], main = "Autocorrelation plot of Chain, c = 1")
 hist(chain[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Chain, c = 1") 
 ```
 
+Here, we evaluate the performance of the sampler when c = 1 without burn in. The first plot is the trace plot, showing the trace of our chain. We can check that the trace plot does not have any trends. 
+/# The auto correlation 
+
 ```{r}
 # Histogram of the target distribution Beta(6,4) vs. the Chain with burnIn
 par(mfrow=c(1,2))
@@ -90,9 +93,6 @@ abline(v=0.6, col="red")
 # Kolmogorov-Smirnov statistic
 ks.test(chain[-(1:burnIn),1], test2)
 ```
-
-Here, we evaluate the performance of the sampler when c = 1 without burn in. The first plot is the trace plot, showing the trace of our chain. We can check that the trace plot does not have any trends. 
-/# The auto correlation 
 
 ```{r}
 # Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
