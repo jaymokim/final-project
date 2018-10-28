@@ -5,6 +5,9 @@ output: pdf_document
 ---
 
 ```{r}
+install.packages('rattle')
+data(wine, package="rattle")
+
 assign <- function(data){
   mat.data <- data.matrix(data)
   n.row <- nrow(mat.data)
@@ -75,11 +78,5 @@ re.assign <- function(data){
 }
 
 
-n.iter <- 1
-while(all(assign(data) == re.assign(data))==F){
-  n.iter <- n.iter +1
-  assign(data) <- re.assign(data)
-  if(all(assign(data) == re.assign(data))==T) break
-}
 ```
 
