@@ -77,7 +77,7 @@ acf(chain[-(1:burnIn),1], main = "Autocorrelation plot of Chain, c = 1")
 hist(chain[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Chain, c = 1") 
 ```
 
-Here, we evaluate the performance of the sampler when c = 1 without burn in. The first plot is the trace plot, showing the trace of our chain. We can check that the trace plot does not have any trends. 
+Here, we evaluate the performance of the sampler when c = 1 without burn in. The first plot is the trace plot, showing the trace of our chain. We can check that the trace plot does not have any trends, and it is well bounded.  
 /# The auto correlation 
 
 ```{r}
@@ -89,10 +89,9 @@ abline(v=0.6, col="red")
 hist(chain[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Chain, c = 1") 
 abline(v = mean(chain[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
-
-# Kolmogorov-Smirnov statistic
-ks.test(chain[-(1:burnIn),1], test2)
 ```
+
+In addition, we can compare the target distribution Beta(6,4) with the histogram of the chain as we can see above. The red line indicates the real mean of the distribution, which is $\frac{6}{4+6}=0.6$. We can check that both histogram looks similar and the mean of the chain is ``r mean(chain[-(1:burnIn),1])`` which is very close to 0.6. This is after we remove some redundant moves from the chain using BurnIn. However, we can still compare the distribution of Beta(6,4) with the whole chain without BurnIn. 
 
 ```{r}
 # Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
@@ -100,8 +99,10 @@ par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain, xlab = "Samples from Chain", main = "Histogram of Chain, c = 1")
 ```
-
-
+```{r}
+# Kolmogorov-Smirnov statistic
+ks.test(chain[-(1:burnIn),1], test2)
+```
 
 
 
@@ -128,13 +129,15 @@ hist(chain1[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Ch
 abline(v = mean(chain1[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 
-# Kolmogorov-Smirnov statistic
-ks.test(chain1[-(1:burnIn),1], test2)
-
 # Comparing the histogram of the chain with the target distribution Beta(6,4)
 par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain1, xlab = "Samples from chain", main = "Histogram of Chain, c = 0.1")
+
+
+# Kolmogorov-Smirnov statistic
+ks.test(chain1[-(1:burnIn),1], test2)
+
 ```
 
 ```{r}
@@ -154,13 +157,14 @@ hist(chain2[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Ch
 abline(v = mean(chain2[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 
-# Kolmogorov-Smirnov statistic
-ks.test(chain2[-(1:burnIn),1], test2)
-
 # Comparing the histogram of the chain with the target distribution Beta(6,4)
 par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain2, xlab = "Samples from chain", main = "Histogram of Chain, c = 2.5")
+
+# Kolmogorov-Smirnov statistic
+ks.test(chain2[-(1:burnIn),1], test2)
+
 ```
 
 ```{r}
@@ -180,13 +184,13 @@ hist(chain3[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Ch
 abline(v = mean(chain3[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 
-# Kolmogorov-Smirnov statistic
-ks.test(chain3[-(1:burnIn),1], test2)
-
 # Comparing the histogram of the chain with the target distribution Beta(6,4)
 par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain3, xlab = "Samples from chain", main = "Histogram of Chain, c = 10")
+
+# Kolmogorov-Smirnov statistic
+ks.test(chain3[-(1:burnIn),1], test2)
 
 ```
 
