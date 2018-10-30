@@ -101,7 +101,9 @@ hist(chain, xlab = "Samples from Chain", main = "Histogram of Chain, c = 1")
 ```
 ```{r}
 # Kolmogorov-Smirnov statistic
-ks.test(chain[-(1:burnIn),1], test2)
+test2 <- sort(test2)
+chainks <- sort(chain[-(1:burnIn),1])
+ks.test(chainks, test2)
 ```
 
 
@@ -136,7 +138,8 @@ hist(chain1, xlab = "Samples from chain", main = "Histogram of Chain, c = 0.1")
 
 
 # Kolmogorov-Smirnov statistic
-ks.test(chain1[-(1:burnIn),1], test2)
+chain1ks <- sort(chain1[-(1:burnIn),1])
+ks.test(chain1ks, test2)
 
 ```
 
@@ -163,7 +166,8 @@ hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain2, xlab = "Samples from chain", main = "Histogram of Chain, c = 2.5")
 
 # Kolmogorov-Smirnov statistic
-ks.test(chain2[-(1:burnIn),1], test2)
+chain2ks <- sort(chain2[-(1:burnIn),1])
+ks.test(chain2ks, test2)
 
 ```
 
@@ -190,7 +194,8 @@ hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
 hist(chain3, xlab = "Samples from chain", main = "Histogram of Chain, c = 10")
 
 # Kolmogorov-Smirnov statistic
-ks.test(chain3[-(1:burnIn),1], test2)
+chain3ks <- sort(chain3[-(1:burnIn),1])
+ks.test(chain3ks, test2)
 
 ```
 
