@@ -221,9 +221,16 @@ ks.test(chain3ks, "pbeta", 6, 4)
 ```
 
 ```{r}
+acceptance
 acceptance1
 acceptance2
 acceptance3
+
+par(mfrow=c(2,2))
+acf(chain[-(1:burnIn),1])
+acf(chain1[-(1:burnIn),1])
+acf(chain2[-(1:burnIn),1])
+acf(chain3[-(1:burnIn),1])
 ```
 
 Strong autocorrelation such as when $c = 2.5$ or $c = 10$
