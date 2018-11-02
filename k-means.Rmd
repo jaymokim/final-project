@@ -110,14 +110,19 @@ Now, we use the scaled data of the wine data. The "scale" function calculates ea
 ```{r}
 
 data.train <- scale(wine[-1])
-set.seed(12)
+set.seed(3)
 cluster.scale <- kmeans_ft(data.train)
 plotcluster(data.train, cluster.scale$new_group)
 
 cluster.scale <- kmeans_ft(data.train)
 type.g1.scale <- wine[,1][which(cluster.scale$new_group==1)]
+accurate.scale.1 <- length(type.g1.scale[type.g1.scale==1])/length(type.g1.scale)
 type.g2.scale <- wine[,1][which(cluster.scale$new_group==2)]
+accurate.scale.2 <- length(type.g2.scale[type.g2.scale==2])/length(type.g2.scale)
 type.g3.scale <- wine[,1][which(cluster.scale$new_group==3)]
+accurate.scale.3 <- length(type.g3.scale[type.g3.scale==3])/length(type.g3.scale)
+print(list(type.g1.scale, type.g2.scale, type.g3.scale))
+accurate.scale.1; accurate.scale.2; accurate.scale.3
 
 ```
 
