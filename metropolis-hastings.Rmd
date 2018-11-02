@@ -200,9 +200,16 @@ ks.test(chain3ks, test2)
 ```
 
 ```{r}
+acceptance
 acceptance1
 acceptance2
 acceptance3
+
+par(mfrow=c(2,2))
+acf(chain[-(1:burnIn),1])
+acf(chain1[-(1:burnIn),1])
+acf(chain2[-(1:burnIn),1])
+acf(chain3[-(1:burnIn),1])
 ```
 
 Comparing the three autocorrelation plots and acceptance rates, we can see that the acceptance rate increases as the autocorrelation decrease. 
