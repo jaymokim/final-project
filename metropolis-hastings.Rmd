@@ -199,3 +199,12 @@ ks.test(chain3ks, test2)
 
 ```
 
+```{r}
+acceptance1
+acceptance2
+acceptance3
+```
+
+Comparing the three autocorrelation plots and acceptance rates, we can see that the acceptance rate increases as the autocorrelation decrease. 
+low dependence (i.e.,low autocorrelation) - leads to better convergence toward stationary posterior
+                                          - leads to lower uncertainty in results from posterior draws
