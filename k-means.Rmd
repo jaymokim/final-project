@@ -9,21 +9,16 @@ output:
 
 Algorithm:
 First randomly assign a group label from 1 to 3 to each observations.
-Then calculate the current group centers and re-assign each observation to the 
-cluster whose center it is the closest to(using the Euclidean distance). And we iterate until the assignment of observations to groups stops changing.
+Then calculate the current group centers and re-assign each observation to the closest cluster using the Euclidean distance. We iterate this procedure until the assignment of observations to groups stops changing.
 
-
-We implemented the algorithm by first creating the function "initialft" that calculates the group centers and the Euclidean distances and returns new group label
-where each elements of the new group lable is the group whose center it is closest to. And we created the function "kmeans_ft" that iterates the function "initialft" to compare new group label to previous group label and returns the new group label when the new group label equals the previous group label.
-
+We implemented the algorithm by first creating the function "initialft" that calculates the group centers (which can be calculated by mean) and the Euclidean distances between each data points and those group centers. Then, it is included to the new group that the Euclidean distance to group center is shortest. Finally, we created the function called "kmeans_ft" that iterates the function "initialft" to reassign data points into the group that is closest to them until there is no more change to their group label. 
 
 ```{r}
 
 # install.packages('rattle')
 data(wine, package="rattle")
 
-initialft <- function(mat.data, n.row, n.col, G.label, new.data)
-{
+initialft <- function(mat.data, n.row, n.col, G.label, new.data) {
     # calculates the group centres
     mat.mu <- matrix(0,3,(n.col+1))
     for(j in 2:(n.col+1)){
@@ -78,47 +73,54 @@ kmeans_ft <- function(data)
     return(list(number_of_iter = n.iter, new_group = new.l))
 }
 
+```
 
+Then, we can plot how the groups have been decided. As we can see in the plot, the group 1 is located on the left side and the group 2 is located on the middle while the group 3 is located on the right. That is, we can tell that k-means procedure for this "wine" data is successful from the plot. 
 
+```{r}
 # install.packages("cluster")
 # install.packages("fpc")
 library(cluster)
 library(fpc)
+set.seed(12)
 cluster <- kmeans_ft(wine[-1])
 plotcluster(wine[-1], cluster$new_group)
-
-cluster
-wine[,1][which(cluster$new_group==1)]
-wine[,1][which(cluster$new_group==2)]
-wine[,1][which(cluster$new_group==3)]
-
 ```
 
-From the plot, We can see that the clusters seem well seperated but failed to distinguish wine type 2 from wine type 3.
+```{r}
+cluster
+type.g1 <- wine[,1][which(cluster$new_group==1)]
+accurate1 <- length(type.g1[type.g1==1])/length(type.g1)
+type.g2 <- wine[,1][which(cluster$new_group==2)]
+accurate2 <- length(type.g1[type.g2==2])/length(type.g2)
+type.g3 <- wine[,1][which(cluster$new_group==3)]
+accurate3 <- length(type.g3[type.g3==3])/length(type.g3)
+accurate1; accurate2; accurate3
+```
 
+However, if we compare the result of new group label after k-means with the original 'Type' in the wine data set, we can see some discrepancies. For group 1, it matches well to the 'Type' in the data, while for group 2 and group 3, there are discrepancies between Type and groups. For group 2, we can see the mixture of Type 1, 2 and 3, and for group 3, it is consisted of Type 2 and Type 3. 
 
+Now, we use the scaled data of the wine data. The "scale" function calculates each column's mean and standard deviation, then scales each elements by subtracting the mean and then dividing by the standard deviation.
 
 ```{r}
 
 data.train <- scale(wine[-1])
+set.seed(12)
 cluster.scale <- kmeans_ft(data.train)
 plotcluster(data.train, cluster.scale$new_group)
 
 cluster.scale <- kmeans_ft(data.train)
-wine[,1][which(cluster.scale$new_group==1)]
-wine[,1][which(cluster.scale$new_group==2)]
-wine[,1][which(cluster.scale$new_group==3)]
+type.g1.scale <- wine[,1][which(cluster.scale$new_group==1)]
+type.g2.scale <- wine[,1][which(cluster.scale$new_group==2)]
+type.g3.scale <- wine[,1][which(cluster.scale$new_group==3)]
 ```
-
-"scale" function calculates each column's mean and standard deviation, then scale each element by subtracting the mean and dividing by the standard deviation.
 
 The scaled data improved the clustering results, but still failed to distinguish from wine type 2 and wine type3.
 
-
 ```{r}
-
 cluster2 <- kmeans_ft(iris[,-5])
 with(iris, pairs(iris[-5], col=c(1:3)[cluster2$new_group])) 
+plotcluster(iris[-5], cluster2$new_group)
 
 k <- kmeans_ft(iris[,1:4])
 k
@@ -131,6 +133,7 @@ iris[,5][which(k$new_group==3)]
 
 cluster2.scale <- kmeans_ft(scale(iris[,1:4]))
 with(iris, pairs(scale(iris[,1:4]), col=c(1:3)[cluster2.scale$new_group]))
+plotcluster(iris[-5], cluster2.scale$new_group)
 
 k2 <- kmeans_ft(scale(iris[,1:4]))
 k2
@@ -138,6 +141,5 @@ iris[,5][which(k2$new_group==1)]
 iris[,5][which(k2$new_group==2)]
 iris[,5][which(k2$new_group==3)]
 ```
-
 
 Clusters of both scaled and unscaled data classified the three different species of Iris data almost perfectly.
