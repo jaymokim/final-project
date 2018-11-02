@@ -114,12 +114,9 @@ ks.test(chainks, "pbeta", 6, 4)
 
 
 ```{r}
-# c = 0.1 / c = 2.5 / c = 10
-chain1=metropolis_MCMC(startvalue, 10000, c=0.1)
-chain2=metropolis_MCMC(startvalue, 10000, c=2.5)
-chain3=metropolis_MCMC(startvalue, 10000, c=10)
-
+set.seed(1)
 # Performance of the sampler: c = 0.1
+chain1=metropolis_MCMC(startvalue, 10000, c=0.1)
 par(mfrow=c(1,3))
 acceptance1 = 1-mean(duplicated(chain1[-(1:burnIn),]))
 plot(chain1[-(1:burnIn),1], type='l', main = "Trace plot of Chain, c = 0.1")
@@ -154,7 +151,9 @@ ks.test(chain1ks, "pbeta", 6, 4)
 ```
 
 ```{r}
+set.seed(2)
 # Performance of the sampler: c = 2.5
+chain2=metropolis_MCMC(startvalue, 10000, c=2.5)
 par(mfrow=c(1,3))
 acceptance2 = 1-mean(duplicated(chain2[-(1:burnIn),]))
 plot(chain2[-(1:burnIn),1], type='l', main = "Trace plot of Chain, c = 2.5")
@@ -187,7 +186,9 @@ ks.test(chain2ks, "pbeta", 6, 4)
 ```
 
 ```{r}
+set.seed(3)
 # Performance of the sampler: c = 10
+chain3=metropolis_MCMC(startvalue, 10000, c=10)
 par(mfrow=c(1,3))
 acceptance3 = 1-mean(duplicated(chain3[-(1:burnIn),]))
 plot(chain3[-(1:burnIn),1], type='l', main = "Trace plot of Chain, c = 10")
@@ -225,6 +226,11 @@ acceptance2
 acceptance3
 ```
 
-Comparing the three autocorrelation plots and acceptance rates, we can see that the acceptance rate increases as the autocorrelation decrease. 
+Strong autocorrelation such as when $c = 2.5$ or $c = 10$
+strong autocorrelation is related to higher p-value in the k-s test.
+We observe the strongest autocorrelation when $c = 2.5$ compared to when $c = 10$ or $c = 0.1$.
+In addition, p-value for the k-s test is highest when $c = 2.5$ meaning the chain resembles Beta(6, 4) closest when $c = 2.5$.
+However, as the value of $c$ increases, we observe that the acceptance rate increases.
+We can deduce from such observation that the proposal function may be different from Beta(6, 4) and high acceptance rate would actually make the samples drawn from the algorithm deviate from Beta(6, 4), out target distribution.
 low dependence (i.e.,low autocorrelation) - leads to better convergence toward stationary posterior
                                           - leads to lower uncertainty in results from posterior draws
