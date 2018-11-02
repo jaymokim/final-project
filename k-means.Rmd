@@ -110,11 +110,7 @@ Now, we use the scaled data of the wine data. The "scale" function calculates ea
 ```{r}
 
 data.train <- scale(wine[-1])
-<<<<<<< HEAD
-set.seed(3)
-=======
 set.seed(10)
->>>>>>> 7c3a55fe9471e1bdb8d6f2a045dac1bea92d51ea
 cluster.scale <- kmeans_ft(data.train)
 plotcluster(data.train, cluster.scale$new_group)
 
