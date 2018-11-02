@@ -84,7 +84,7 @@ Then, we can plot how the groups have been decided. As we can see in the plot, t
 # install.packages("fpc")
 library(cluster)
 library(fpc)
-set.seed(12)
+set.seed(10)
 cluster <- kmeans_ft(wine[-1])
 plotcluster(wine[-1], cluster$new_group)
 ```
@@ -110,7 +110,7 @@ Now, we use the scaled data of the wine data. The "scale" function calculates ea
 ```{r}
 
 data.train <- scale(wine[-1])
-set.seed(12)
+set.seed(10)
 cluster.scale <- kmeans_ft(data.train)
 plotcluster(data.train, cluster.scale$new_group)
 
