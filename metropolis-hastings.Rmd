@@ -10,8 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Metropolis-Hastings
 
-Our target distribution is Beta(6,4) and our proposal distribution is $\phi_{prop}|\phi_{old} \sim Beta(c\phi_{old}, \; c(1-\phi_{old}))$. 
-First, we implement several functions which will be used in calculating posterior distribution. Here, we define likelihood function which gives the log-likelihood value of the parameter, and also prior function that gives the log density value of the parameter. The density used in the likelihood function is Beta(6,4) since it is our target distribution, and the density used in the prior function is Uniform(0,1) since our start value is from Uniform(0,1). In addition, since the parameters in Beta distribution have to be larger than 0, for c>0, $\phi<1$. 
+Our target distribution is Beta(6,4) and our proposal distribution is $\phi_{prop}|\phi_{old} \sim Beta(c\phi_{old}, \; c(1-\phi_{old}))$, for some constant $c$. 
+First, we implement several functions which will be used in calculating posterior distribution. Here, we define likelihood function which gives the log-likelihood value of the parameter, and also prior function that gives the log density value of the parameter. The density used in the likelihood function is Beta(6,4) since it is our target distribution, and the density used in the prior function is Uniform[0,1] since our start value is from Uniform[0,1]. In addition, since the parameters in Beta distribution have to be larger than 0, for $c>0, \; \phi<1$. 
 
 ```{r}
 a <- 6
@@ -19,6 +19,7 @@ b <- 4
 
 likelihood <- function(param){
   singlelikelihoods = dbeta(param, a, b, log = T)
+  return(singlelikelihoods)
 }
 
 prior <- function(param){
@@ -31,7 +32,7 @@ posterior <- function(param){
 }
 ```
 
-Posterior function can be calculated by multiplying likelihood function and prior function. However, we used log in the likelihood function and the prior function, so we need to convert them by putting $exp$ in the posterior function. 
+Posterior function can be calculated by multiplying likelihood function and prior function. However, we used log in the likelihood function and the prior function, so we need to convert them into $exp(likelihood + prior)$ in the posterior function. 
 
 ```{r}
 metropolis_MCMC <- function(startvalue, iterations, c){
@@ -55,7 +56,7 @@ After implementing all the functions that are required to obtain a chain, then w
 
 $$ \phi_{new} = \phi_{proposal} \;\; with \;\; probability \;\; \alpha(\phi_{old}, \phi_{new}) $$
              $$ = \phi_{old} \;\; with \;\; probaility \;\; 1-\alpha(\phi_{old}, \phi_{new}) $$
-where $\alpha(\phi_{old}, \phi_{new}) = min(1, \frac{p(\phi_{new})q(\phi_{old}|\phi_{new})}{p(\phi_{old})q(\phi_{new}|\phi_{old})})$. Here, $p(\phi)$ is the posterior function, and $q(\phi_{new}|\phi_{old})$ is our proposal functions that follows $Beta(c\phi_{old}, \; c(1-\phi_{old}))$. Since Beta distribution is asymmetric, the probability form cannot be simplified to the ratio of posterior functions. Hence, we need to calculate the probabiltiy by using posterior functions and proposal functions. 
+where $\alpha(\phi_{old}, \phi_{new}) = min(1, \frac{p(\phi_{new})q(\phi_{old}|\phi_{new})}{p(\phi_{old})q(\phi_{new}|\phi_{old})})$. Here, $p(\phi)$ is the posterior function, and $q(\phi_{new}|\phi_{old})$ is our proposal functions that follows $Beta(c\phi_{old}, \; c(1-\phi_{old}))$. Since Beta distribution is asymmetric, the probability form cannot be simplified to the ratio of posterior functions. Hence, we need to calculate the probabiltiy by using posterior functions and proposal functions.
 
 Next, we can finally get the chain using metropolis_MCMC function with the startvalue generated from Uniform(0,1). We also generate random values from Beta(6,4) for the comparison.
 
@@ -83,10 +84,12 @@ Here, we evaluate the performance of the sampler when c = 1 without burn in. The
 ```{r}
 # Histogram of the target distribution Beta(6,4) vs. the Chain with burnIn
 par(mfrow=c(1,2))
-hist(test2, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
+hist(test2, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)", 
+     sub = "with BurnIn")
 abline(v=mean(test2), col="blue")
 abline(v=0.6, col="red")
-hist(chain[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Chain, c = 1") 
+hist(chain[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Chain, c = 1"
+     , sub = "with BurnIn") 
 abline(v = mean(chain[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 ```
@@ -96,14 +99,16 @@ In addition, we can compare the target distribution Beta(6,4) with the histogram
 ```{r}
 # Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
 par(mfrow=c(1,2))
-hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
-hist(chain, xlab = "Samples from Chain", main = "Histogram of Chain, c = 1")
+hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)", 
+     sub = "without BurnIn")
+hist(chain, xlab = "Samples from Chain", main = "Histogram of Chain, c = 1", 
+     sub = "without BurnIn")
 ```
+
 ```{r}
 # Kolmogorov-Smirnov statistic
-test2 <- sort(test2)
 chainks <- sort(chain[-(1:burnIn),1])
-ks.test(chainks, test2)
+ks.test(chainks, "pbeta", 6, 4)
 ```
 
 
@@ -120,26 +125,31 @@ acceptance1 = 1-mean(duplicated(chain1[-(1:burnIn),]))
 plot(chain1[-(1:burnIn),1], type='l', main = "Trace plot of Chain, c = 0.1")
 abline(h=0.6, col="red")
 acf(chain1[-(1:burnIn),1], main = "Autocorrelation plot of Chain, c = 0.1")
-hist(chain1[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Chain, c = 0.1") 
+hist(chain1[-(1:burnIn),1], xlab = "Samples from chain", 
+     main = "Histogram of Chain, c = 0.1") 
 
 # Histogram of the target distribution Beta(6,4) vs. the Chain after burnIn
 par(mfrow=c(1,2))
-hist(test2, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
+hist(test2, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)", 
+     sub = "with BurnIn")
 abline(v=mean(test2), col="blue")
 abline(v=0.6, col="red")
-hist(chain1[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Chain, c = 0.1") 
+hist(chain1[-(1:burnIn),1], xlab = "Samples from chain", 
+     main = "Histogram of Chain, c = 0.1", sub = "with BurnIn") 
 abline(v = mean(chain1[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 
 # Comparing the histogram of the chain with the target distribution Beta(6,4)
 par(mfrow=c(1,2))
-hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
-hist(chain1, xlab = "Samples from chain", main = "Histogram of Chain, c = 0.1")
+hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)",
+     sub = "without BurnIn")
+hist(chain1, xlab = "Samples from chain", main = "Histogram of Chain, c = 0.1", 
+     sub = "without BurnIn")
 
 
 # Kolmogorov-Smirnov statistic
 chain1ks <- sort(chain1[-(1:burnIn),1])
-ks.test(chain1ks, test2)
+ks.test(chain1ks, "pbeta", 6, 4)
 
 ```
 
@@ -150,24 +160,29 @@ acceptance2 = 1-mean(duplicated(chain2[-(1:burnIn),]))
 plot(chain2[-(1:burnIn),1], type='l', main = "Trace plot of Chain, c = 2.5")
 abline(h=0.6, col="red")
 acf(chain2[-(1:burnIn),1], main = "Autocorrelation plot of Chain, c = 2.5")
-hist(chain2[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Chain, c = 2.5") 
+hist(chain2[-(1:burnIn),1], xlab = "Samples from chain", 
+     main = "Histogram of Chain, c = 2.5") 
 
 # Histogram of the target distribution Beta(6,4) vs. the Chain after burnIn
-hist(test2, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
+hist(test2, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)",
+     sub = "with BurnIn")
 abline(v=mean(test2), col="blue")
 abline(v=0.6, col="red")
-hist(chain2[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Chain, c = 2.5") 
+hist(chain2[-(1:burnIn),1], xlab = "Samples from chain", 
+     main = "Histogram of Chain, c = 2.5", sub = "with BurnIn") 
 abline(v = mean(chain2[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 
 # Comparing the histogram of the chain with the target distribution Beta(6,4)
 par(mfrow=c(1,2))
-hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
-hist(chain2, xlab = "Samples from chain", main = "Histogram of Chain, c = 2.5")
+hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)", 
+     sub = "without BurnIn")
+hist(chain2, xlab = "Samples from chain", main = "Histogram of Chain, c = 2.5", 
+     sub = "without BurnIn")
 
 # Kolmogorov-Smirnov statistic
 chain2ks <- sort(chain2[-(1:burnIn),1])
-ks.test(chain2ks, test2)
+ks.test(chain2ks, "pbeta", 6, 4)
 
 ```
 
@@ -178,24 +193,29 @@ acceptance3 = 1-mean(duplicated(chain3[-(1:burnIn),]))
 plot(chain3[-(1:burnIn),1], type='l', main = "Trace plot of Chain, c = 10")
 abline(h=0.6, col="red")
 acf(chain3[-(1:burnIn),1], main = "Autocorrelation plot of Chain, c = 10")
-hist(chain3[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Chain, c = 10") 
+hist(chain3[-(1:burnIn),1], xlab = "Samples from chain", 
+     main = "Histogram of Chain, c = 10") 
 
 # Histogram of the target distribution Beta(6,4) vs. the Chain after burnIn
-hist(test2, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
+hist(test2, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)",
+     sub = "with BurnIn")
 abline(v=mean(test2), col="blue")
 abline(v=0.6, col="red")
-hist(chain3[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Chain, c = 10") 
+hist(chain3[-(1:burnIn),1], xlab = "Samples from chain", 
+     main = "Histogram of Chain, c = 10", sub = "with BurnIn") 
 abline(v = mean(chain3[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 
 # Comparing the histogram of the chain with the target distribution Beta(6,4)
 par(mfrow=c(1,2))
-hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)")
-hist(chain3, xlab = "Samples from chain", main = "Histogram of Chain, c = 10")
+hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)",
+     sub = "without BurnIn")
+hist(chain3, xlab = "Samples from chain", main = "Histogram of Chain, c = 10",
+     sub = "without BurnIn")
 
 # Kolmogorov-Smirnov statistic
 chain3ks <- sort(chain3[-(1:burnIn),1])
-ks.test(chain3ks, test2)
+ks.test(chain3ks, "pbeta", 6, 4)
 
 ```
 
