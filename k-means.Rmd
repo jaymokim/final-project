@@ -123,7 +123,8 @@ accurate.scale.1; accurate.scale.2; accurate.scale.3
 
 ```
 
-The scaled data improved the clustering results.
+Based on the accuracy calculated above, we can see that the scaled data improved the clustering results.
+Therefore, we concluded that clustering data using k-means function is significantly improved when using the scaled wine data versus original wine data.
 
 ## Iris data
 
@@ -144,7 +145,7 @@ accu3 <- length(d3[d3=="virginica"])/length(d3)
 accu1; accu2; accu3
 
 ```
-Now, let's look at the iris data set. As we can see in the plot, the data set is well seperated into three groups. In addition, if we calculate the accuracy rate of the result from k-means to the Species in the original iris data set, we can check that the accuracy rates for three groups are almost 1, indicating that our k-means function has perfectly seperated the data set into 3 groups.
+Now, let's look at the iris data set. As we can see in the plot, the data set is only well seperated for one type of species. However, the other two species are clustered together and are hard to distinguish. In addition, if we calculate the accuracy rate of the result from k-means to the Species in the original iris data set, we can check that the accuracy rates for one of the three groups is almost 1 while the other two groups are below 0.5, indicating that our k-means function has only successfully seperated the data set into 2 groups, not 3.
 
 
 ## Scaled Iris data
@@ -154,7 +155,7 @@ cluster2.scale <- kmeans_ft(scale(iris[,1:4]))
 with(iris, pairs(scale(iris[,1:4]), col=c(1:3)[cluster2.scale$new_group]))
 plotcluster(iris[-5], cluster2.scale$new_group)
 
-set.seed(10)
+set.seed(11)
 k2 <- kmeans_ft(scale(iris[,1:4]))
 k2
 d11 <- iris[,5][which(k2$new_group==1)]
@@ -166,4 +167,4 @@ accu33 <- length(d33[d33=="virginica"])/length(d33)
 accu11; accu22; accu33
 ```
 
-Likewise, for the scaled data of iris, we can also check that k-means works well that it successfully grouped the data set into 3 clusters. If we calculate the accuracy rate of this result, we can check that the accuracy rates for each species are almost 1, as same as the previous result without scaling. That is, for this case, since the k-means in the original data set without scaling already almost perfectly classify the data, scaling does not have significant difference, but it still classifies the data almost perfectly. 
+Even if we use the scaled iris data, the k-means function fails to cluster different species perfectly. The plot is similar to the unscaled iris data, the k-means function is only successful in distinguishing one type of species. In addition, we can check that when we use the scaled iris data, the accuracy is only improved in minor scale. In conclusion, while clustering data using k-means function is not majorly improved when using the scaled iris data versus original iris data.
