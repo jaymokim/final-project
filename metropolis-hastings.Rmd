@@ -97,23 +97,13 @@ abline(v = mean(chain[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 ```
 
-In addition, we can compare the target distribution Beta(6,4) with the histogram of the chain as we can see above. The red line indicates the real mean of the distribution, which is $\frac{6}{4+6}=0.6$. We can check that both histogram looks similar and the mean of the chain is ``r mean(chain[-(1:burnIn),1])`` which is very close to 0.6. This is after we remove some redundant moves from the chain using BurnIn. However, we can still compare the distribution of Beta(6,4) with the whole chain without BurnIn. 
-
-### Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
-```{r}
-par(mfrow=c(1,2))
-hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)", 
-     sub = "without BurnIn")
-
-hist(chain, xlab = "Samples from Chain", main = "Histogram of Chain, c = 1", 
-     sub = "without BurnIn")
-```
+In addition, we can compare the target distribution Beta(6,4) with the histogram of the chain as we can see above. The red line indicates the real mean of the distribution, which is $\frac{6}{4+6}=0.6$. We can check that both histogram looks similar and the mean of the chain is ``r mean(chain[-(1:burnIn),1])`` which is very close to 0.6. This is after we remove some redundant moves from the chain using BurnIn. 
 
 ### Density function for the chain vs. Beta(6,4) 
 ```{r}
 par(mfrow = c(2,2))
 plot(density(test), main = "Density of Beta(6, 4)")
-plot(density(chain), main = "Density ft for the Chain (c = 1)")
+plot(density(chain), main = "Density ft of Chain (c = 1) without BurnIn")
 plot(density(test2), main = "Density ft of Beta(6, 4)")
 plot(density(chain[-(1:burnIn),1]), main = "Density ft for the Chain (c = 1) after BurnIn")
 ```
@@ -155,21 +145,11 @@ abline(v = mean(chain1[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 ```
 
-
-### Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
-```{r}
-par(mfrow=c(1,2))
-hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)",
-     sub = "without BurnIn")
-hist(chain1, xlab = "Samples from chain", main = "Histogram of Chain, c = 0.1", 
-     sub = "without BurnIn")
-```
-
 ### Density function for the chain vs. Beta(6,4) 
 ```{r}
 par(mfrow = c(2,2))
 plot(density(test), main = "Density of Beta(6, 4)")
-plot(density(chain1), main = "Density ft for the Chain (c = 0.1)")
+plot(density(chain1), main = "Density ft for Chain (c = 0.1) without BurnIn")
 plot(density(test2), main = "Density ft of Beta(6, 4)")
 plot(density(chain1[-(1:burnIn),1]), main = "Density ft for the Chain (c = 0.1) after BurnIn")
 ```
@@ -209,21 +189,11 @@ abline(v = mean(chain2[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 ```
 
-
-### Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
-```{r}
-par(mfrow=c(1,2))
-hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)", 
-     sub = "without BurnIn")
-hist(chain2, xlab = "Samples from chain", main = "Histogram of Chain, c = 2.5", 
-     sub = "without BurnIn")
-```
-
 ### Density function for the chain vs. Beta(6,4) 
 ```{r}
 par(mfrow = c(2,2))
 plot(density(test), main = "Density of Beta(6, 4)")
-plot(density(chain2), main = "Density ft for the Chain (c = 2.5)")
+plot(density(chain2), main = "Density ft for Chain (c = 2.5) without BurnIn")
 plot(density(test2), main = "Density ft of Beta(6, 4)")
 plot(density(chain2[-(1:burnIn),1]), main = "Density ft for the Chain (c = 2.5) after BurnIn")
 ```
@@ -237,7 +207,7 @@ ks.test(chain2ks, test2)
 ```
 
 
-* For c = 10
+## For c = 10
 
 ### Performance of the sampler: c = 10
 ```{r}
@@ -265,20 +235,11 @@ abline(v = mean(chain3[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 ```
 
-### Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
-```{r}
-par(mfrow=c(1,2))
-hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)",
-     sub = "without BurnIn")
-hist(chain3, xlab = "Samples from chain", main = "Histogram of Chain, c = 10",
-     sub = "without BurnIn")
-```
-
 ### Density function for the chain vs. Beta(6,4) 
 ```{r}
 par(mfrow = c(2,2))
 plot(density(test), main = "Density of Beta(6, 4)")
-plot(density(chain3), main = "Density ft for the Chain (c = 10)")
+plot(density(chain3), main = "Density ft for Chain (c = 10) without BurnIn")
 plot(density(test2), main = "Density ft of Beta(6, 4)")
 plot(density(chain3[-(1:burnIn),1]), main = "Density ft for the Chain (c = 10) after BurnIn")
 ```
