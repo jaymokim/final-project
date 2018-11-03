@@ -36,11 +36,10 @@ initialft <- function(mat.data, n.row, n.col, G.label, new.data) {
     distance <- matrix(0,n.row,3)
     new.label <- rep(0,n.row)
     for(i in 1:n.row){
-        for(j in 2:(n.col+1)){
-            distance[i,1] <- sqrt(sum((new.data[i,j]-mat.mu[1,j])^2))
-            distance[i,2] <- sqrt(sum((new.data[i,j]-mat.mu[2,j])^2))
-            distance[i,3] <- sqrt(sum((new.data[i,j]-mat.mu[3,j])^2))
-        }
+      distance[i,1] <- sqrt(sum((new.data[i,]-mat.mu[1,])^2))
+      distance[i,2] <- sqrt(sum((new.data[i,]-mat.mu[2,])^2))
+      distance[i,3] <- sqrt(sum((new.data[i,]-mat.mu[3,])^2))
+        
     }
     
     # re-assign
@@ -84,7 +83,7 @@ Then, we can plot how the groups have been decided. As we can see in the plot, t
 # install.packages("fpc")
 library(cluster)
 library(fpc)
-set.seed(10)
+set.seed(5)
 cluster <- kmeans_ft(wine[-1])
 plotcluster(wine[-1], cluster$new_group)
 ```
@@ -108,13 +107,11 @@ However, if we compare the result of new group label after k-means with the orig
 Now, we use the scaled data of the wine data. The "scale" function calculates each column's mean and standard deviation, then scales each elements by subtracting the mean and then dividing by the standard deviation.
 
 ```{r}
-
+set.seed(6)
 data.train <- scale(wine[-1])
-set.seed(3)
 cluster.scale <- kmeans_ft(data.train)
 plotcluster(data.train, cluster.scale$new_group)
 
-cluster.scale <- kmeans_ft(data.train)
 type.g1.scale <- wine[,1][which(cluster.scale$new_group==1)]
 accurate.scale.1 <- length(type.g1.scale[type.g1.scale==1])/length(type.g1.scale)
 type.g2.scale <- wine[,1][which(cluster.scale$new_group==2)]
@@ -126,8 +123,7 @@ accurate.scale.1; accurate.scale.2; accurate.scale.3
 
 ```
 
-The scaled data improved the clustering results, but still failed to distinguish from Type 2 and wine Type 3 in the original wine data.
-
+The scaled data improved the clustering results.
 
 ## Iris data
 
