@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Metropolis-Hastings
 
 Our target distribution is Beta(6,4) and our proposal distribution is $\phi_{prop}|\phi_{old} \sim Beta(c\phi_{old}, \; c(1-\phi_{old}))$, for some constant $c$. 
-First, we implement several functions which will be used in calculating posterior distribution. Here, we define likelihood function which gives the log-likelihood value of the parameter, and also prior function that gives the log density value of the parameter. The density used in the likelihood function is Beta(6,4) since it is our target distribution, and the density used in the prior function is Uniform[0,1] since our start value is from Uniform[0,1]. In addition, since the parameters in Beta distribution have to be larger than 0, for $c>0, \; \phi<1$. 
+First, we built several functions which will be used in calculating posterior distribution. Here, we defined likelihood function which gives the log-likelihood value of the parameter, and also prior function that gives the log density value of the parameter. The density used in the likelihood function is Beta(6,4) since it is our target distribution, and the density used in the prior function is Uniform[0,1] since our start value is from Uniform[0,1]. In addition, since the parameters in Beta distribution have to be larger than 0, for $c>0, \; \phi<1$. 
 
 ```{r}
 a <- 6
@@ -32,7 +32,7 @@ posterior <- function(param){
 }
 ```
 
-Posterior function can be calculated by multiplying likelihood function and prior function. However, we used log in the likelihood function and the prior function, so we need to convert them into $exp(likelihood + prior)$ in the posterior function. 
+Posterior function can be calculated by multiplying likelihood function and prior function. However, since we used log in the likelihood function and the prior function, we have used $exp(likelihood + prior)$ instead in the posterior function. 
 
 ```{r}
 metropolis_MCMC <- function(startvalue, iterations, c){
@@ -52,17 +52,18 @@ metropolis_MCMC <- function(startvalue, iterations, c){
 }
 ```
 
-After implementing all the functions that are required to obtain a chain, then we can finally define metropolis_MCMC function that can yield a chain. Note that
+After implementing all the functions that are required in obtaining a chain, we have finally defined metropolis_MCMC function that yields a chain. Note that
 
 $$ \phi_{new} = \phi_{proposal} \;\; with \;\; probability \;\; \alpha(\phi_{old}, \phi_{new}) $$
              $$ = \phi_{old} \;\; with \;\; probaility \;\; 1-\alpha(\phi_{old}, \phi_{new}) $$
-where $\alpha(\phi_{old}, \phi_{new}) = min(1, \frac{p(\phi_{new})q(\phi_{old}|\phi_{new})}{p(\phi_{old})q(\phi_{new}|\phi_{old})})$. Here, $p(\phi)$ is the posterior function, and $q(\phi_{new}|\phi_{old})$ is our proposal functions that follows $Beta(c\phi_{old}, \; c(1-\phi_{old}))$. Since Beta distribution is asymmetric, the probability form cannot be simplified to the ratio of posterior functions. Hence, we need to calculate the probabiltiy by using posterior functions and proposal functions.
+where $\alpha(\phi_{old}, \phi_{new}) = min(1, \frac{p(\phi_{new})q(\phi_{old}|\phi_{new})}{p(\phi_{old})q(\phi_{new}|\phi_{old})})$. Here, $p(\phi)$ is the posterior function, and $q(\phi_{new}|\phi_{old})$ is our proposal function which follows $Beta(c\phi_{old}, \; c(1-\phi_{old}))$. Since Beta distribution is asymmetric, the probability form cannot be simplified to the ratio of posterior functions. Hence, we need to calculate the probabiltiy by using posterior functions and proposal functions.
 
-Next, we can finally get the chain using metropolis_MCMC function with the startvalue generated from Uniform(0,1). We also generate random values from Beta(6,4) for the comparison.
+Finally, we got the chain using metropolis_MCMC function with the startvalue generated from Uniform[0,1]. We also generated random values from Beta(6,4) for comparison.
 
 ```{r}
+set.seed(2)
 startvalue <- runif(1, 0, 1)
-chain=metropolis_MCMC(startvalue, 10000, c=1)
+chain = metropolis_MCMC(startvalue, 10000, c=1)
 test <- rbeta(10000, 6, 4)
 ```
 
@@ -233,7 +234,7 @@ acf(chain2[-(1:burnIn),1], main = "ACF for c = 2.5")
 acf(chain3[-(1:burnIn),1], main = "ACF for c = 10")
 ```
 
-The acceptance rate can be influenced by the proposal function: generally, the closer the proposals are, the larger the acceptance rate. Very high acceptance rates, however, are usually not beneficial: this means that the algorithms is “staying” at the same point, which results in a suboptimal probing of the parameter space (mixing). It can be shown that acceptance rates between 20% and 30% are optimal for typical applications.
+The acceptance rate can be influenced by the proposal function: generally, the closer the proposals are, the larger the acceptance rate. Very high acceptance rates, however, are usually not beneficial: this means that the algorithms is staying at the same point, which results in a suboptimal probing of the parameter space (mixing). It can be shown that acceptance rates between 20% and 30% are optimal for typical applications.
 
 As c increases acceptance rate increases ; 
 Trace plot : diverge trend high in c=0.1 compared to other plots
