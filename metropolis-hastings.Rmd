@@ -79,7 +79,7 @@ acf(chain[-(1:burnIn),1], main = "Autocorrelation plot of Chain, c = 1")
 hist(chain[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Chain, c = 1") 
 ```
 
-Here, we evaluate the performance of the sampler when c = 1 without burn in. The first plot is the trace plot, showing the trace of our chain. We can check that the trace plot does not have any trends, and it is well bounded.  
+Here, we evaluate the performance of the sampler when c = 1 without burn in. The first plot is the trace plot, showing the trace of our chain. The specific explanation of those plots will be covered at the last part. 
 
 ```{r}
 # Histogram of the target distribution Beta(6,4) vs. the Chain with burnIn
@@ -101,17 +101,30 @@ In addition, we can compare the target distribution Beta(6,4) with the histogram
 par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)", 
      sub = "without BurnIn")
+
 hist(chain, xlab = "Samples from Chain", main = "Histogram of Chain, c = 1", 
      sub = "without BurnIn")
 ```
 
+If we check the difference between the distributions with and without BurnIn. As we can see in the plot, the distribution after BurnIn better suits the target distribution. 
+
 ```{r}
-# Kolmogorov-Smirnov statistic
+par(mfrow = c(2,2))
+plot(density(test), main = "Density of Beta(6, 4)")
+plot(density(chain), main = "Density ft for the Chain (c = 1)")
+plot(density(test2), main = "Density ft of Beta(6, 4)")
+plot(density(chain[-(1:burnIn),1]), main = "Density ft for the Chain (c = 1) after BurnIn")
+```
+
+Finally, we can implement Kolmogorov-Smirnov test. Accordking to the result, we cannot say that the chain follows Beta(6, 4) distribution since p-value is smaller than 0.05. 
+
+```{r}
+# Kolmogorov-Smirnov Test
 chainks <- sort(chain[-(1:burnIn),1])
 ks.test(chainks, "pbeta", 6, 4)
 ```
 
-
+Next, we repeat the same procedure when c = 0.1, c = 2.5 and c = 10. 
 
 ```{r}
 set.seed(1)
@@ -136,13 +149,18 @@ hist(chain1[-(1:burnIn),1], xlab = "Samples from chain",
 abline(v = mean(chain1[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 
-# Comparing the histogram of the chain with the target distribution Beta(6,4)
+# Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
 par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)",
      sub = "without BurnIn")
 hist(chain1, xlab = "Samples from chain", main = "Histogram of Chain, c = 0.1", 
      sub = "without BurnIn")
 
+par(mfrow = c(2,2))
+plot(density(test), main = "Density of Beta(6, 4)")
+plot(density(chain1), main = "Density ft for the Chain (c = 0.1)")
+plot(density(test2), main = "Density ft of Beta(6, 4)")
+plot(density(chain1[-(1:burnIn),1]), main = "Density ft for the Chain (c = 0.1) after BurnIn")
 
 # Kolmogorov-Smirnov statistic
 chain1ks <- sort(chain1[-(1:burnIn),1])
@@ -173,11 +191,17 @@ hist(chain2[-(1:burnIn),1], xlab = "Samples from chain",
 abline(v = mean(chain2[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 
-# Comparing the histogram of the chain with the target distribution Beta(6,4)
+# Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)", 
      sub = "without BurnIn")
 hist(chain2, xlab = "Samples from chain", main = "Histogram of Chain, c = 2.5", 
      sub = "without BurnIn")
+
+par(mfrow = c(2,2))
+plot(density(test), main = "Density of Beta(6, 4)")
+plot(density(chain2), main = "Density ft for the Chain (c = 2.5)")
+plot(density(test2), main = "Density ft of Beta(6, 4)")
+plot(density(chain2[-(1:burnIn),1]), main = "Density ft for the Chain (c = 2.5) after BurnIn")
 
 # Kolmogorov-Smirnov statistic
 chain2ks <- sort(chain2[-(1:burnIn),1])
@@ -207,12 +231,18 @@ hist(chain3[-(1:burnIn),1], xlab = "Samples from chain",
 abline(v = mean(chain3[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
 
-# Comparing the histogram of the chain with the target distribution Beta(6,4)
+# Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
 par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)",
      sub = "without BurnIn")
 hist(chain3, xlab = "Samples from chain", main = "Histogram of Chain, c = 10",
      sub = "without BurnIn")
+
+par(mfrow = c(2,2))
+plot(density(test), main = "Density of Beta(6, 4)")
+plot(density(chain3), main = "Density ft for the Chain (c = 10)")
+plot(density(test2), main = "Density ft of Beta(6, 4)")
+plot(density(chain3[-(1:burnIn),1]), main = "Density ft for the Chain (c = 10) after BurnIn")
 
 # Kolmogorov-Smirnov statistic
 chain3ks <- sort(chain3[-(1:burnIn),1])
