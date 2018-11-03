@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Metropolis-Hastings
 
 Our target distribution is Beta(6,4) and our proposal distribution is $\phi_{prop}|\phi_{old} \sim Beta(c\phi_{old}, \; c(1-\phi_{old}))$, for some constant $c$. 
-First, we implement several functions which will be used in calculating posterior distribution. Here, we define likelihood function which gives the log-likelihood value of the parameter, and also prior function that gives the log density value of the parameter. The density used in the likelihood function is Beta(6,4) since it is our target distribution, and the density used in the prior function is Uniform[0,1] since our start value is from Uniform[0,1]. In addition, since the parameters in Beta distribution have to be larger than 0, for $c>0, \; \phi<1$. 
+First, we built several functions which will be used in calculating posterior distribution. Here, we defined likelihood function which gives the log-likelihood value of the parameter, and also prior function that gives the log density value of the parameter. The density used in the likelihood function is Beta(6,4) since it is our target distribution, and the density used in the prior function is Uniform[0,1] since our start value is from Uniform[0,1]. In addition, since the parameters in Beta distribution have to be larger than 0, for $c>0, \; \phi<1$. 
 
 
 ## For c = 1
@@ -37,7 +37,7 @@ posterior <- function(param){
 }
 ```
 
-Posterior function can be calculated by multiplying likelihood function and prior function. However, we used log in the likelihood function and the prior function, so we need to convert them into $exp(likelihood + prior)$ in the posterior function. 
+Posterior function can be calculated by multiplying likelihood function and prior function. However, since we used log in the likelihood function and the prior function, we have used $exp(likelihood + prior)$ instead in the posterior function. 
 
 ```{r}
 metropolis_MCMC <- function(startvalue, iterations, c){
@@ -57,18 +57,19 @@ metropolis_MCMC <- function(startvalue, iterations, c){
 }
 ```
 
-After implementing all the functions that are required to obtain a chain, then we can finally define metropolis_MCMC function that can yield a chain. Note that
+After implementing all the functions that are required in obtaining a chain, we have finally defined metropolis_MCMC function that yields a chain. Note that
 
 $$ \phi_{new} = \phi_{proposal} \;\; with \;\; probability \;\; \alpha(\phi_{old}, \phi_{new}) $$
              $$ = \phi_{old} \;\; with \;\; probaility \;\; 1-\alpha(\phi_{old}, \phi_{new}) $$
-where $\alpha(\phi_{old}, \phi_{new}) = min(1, \frac{p(\phi_{new})q(\phi_{old}|\phi_{new})}{p(\phi_{old})q(\phi_{new}|\phi_{old})})$. Here, $p(\phi)$ is the posterior function, and $q(\phi_{new}|\phi_{old})$ is our proposal functions that follows $Beta(c\phi_{old}, \; c(1-\phi_{old}))$. Since Beta distribution is asymmetric, the probability form cannot be simplified to the ratio of posterior functions. Hence, we need to calculate the probabiltiy by using posterior functions and proposal functions.
+where $\alpha(\phi_{old}, \phi_{new}) = min(1, \frac{p(\phi_{new})q(\phi_{old}|\phi_{new})}{p(\phi_{old})q(\phi_{new}|\phi_{old})})$. Here, $p(\phi)$ is the posterior function, and $q(\phi_{new}|\phi_{old})$ is our proposal function which follows $Beta(c\phi_{old}, \; c(1-\phi_{old}))$. Since Beta distribution is asymmetric, the probability form cannot be simplified to the ratio of posterior functions. Hence, we need to calculate the probabiltiy by using posterior functions and proposal functions.
 
-Next, we can finally get the chain using metropolis_MCMC function with the startvalue generated from Uniform(0,1). We also generate random values from Beta(6,4) for the comparison.
+Finally, we got the chain using metropolis_MCMC function with the startvalue generated from Uniform[0,1]. We also generated random values from Beta(6,4) for comparison.
 
 ### Performance of the sampler with BurnIn
 ```{r}
+set.seed(2)
 startvalue <- runif(1, 0, 1)
-chain=metropolis_MCMC(startvalue, 10000, c=1)
+chain = metropolis_MCMC(startvalue, 10000, c=1)
 test <- rbeta(10000, 6, 4)
 
 par(mfrow=c(1,3))
@@ -320,4 +321,3 @@ acf(chain3[-(1:burnIn),1], main = "ACF for c = 10")
 As we can see in the result, as c increases, acceptance rate increases. This is because the proposal distribution $\phi_{prop}|\phi_{old} \sim Beta(c\phi_{old}, \; c(1-\phi_{old}))$ is getting narrower compare to the target distribution as c increases. That is, for c = 0.1, the proposal distribution is wider than the target distribution. 
 In addition, according to the trace plot for c = 0.1, we can check that the chain tends to stay at same place more than when c = 2.5 and c = 10. This implies that c has lower acceptance rate. Next, if we look at the autocorrelation plot, we can check that there exists high autocorrelation in the chain, and that causes the chain to stay where it was. In the trace plot for c = 1, the chain moves more frequently than in c = 0.1, but it is more stationary compared to c = 2.5 and c = 10 cases. In addition, according to the autocorrelation plot of c = 1 case, there exists some kind of autocorrelation after the chain goes on compared to c = 2.5 and c = 10 cases. That leads to the result of the acceptance rate for c = 1 case to be larger than when c = 0.1 but smaller than c = 2.5 and c = 10 cases. 
 For c = 2.5 and c = 10, we can see in the autocorrelation has dropped faster than in c = 0.1, so it implies that the chain tends to move faster as we can check in the trace plot. This indicates that the acceptance rate is higher than c = 0.1 for both cases. However, as we can see in the acceptance rates of 3 cases, the acceptance rate when c = 10 is the highest, implying that the chain for c = 10 moves frequently than when c = 2.5. However, very high acceptance rate is not preferrable, and optimal acceptance rate is 20 ~ 30%, as we obtain in c = 1 (which is ``r acceptance``). If we compare among c = 0.1, 2.5, 10, the case when c = 2.5 seems to be the most optimal. This is comparable to the Kolmogorov-Smirnov test p-value, since among those three cases, p-value in c = 2.5 is the highest, implying that it is less likely to reject the null hypothesis that the chain distribution has the same distribution as the target distribution, Beta(6,4). (However, the results of all cases show that they reject the null hypothesis.) 
-
