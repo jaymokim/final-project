@@ -8,10 +8,15 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Metropolis-Hastings
+# Metropolis-Hastings
 
 Our target distribution is Beta(6,4) and our proposal distribution is $\phi_{prop}|\phi_{old} \sim Beta(c\phi_{old}, \; c(1-\phi_{old}))$, for some constant $c$. 
 First, we implement several functions which will be used in calculating posterior distribution. Here, we define likelihood function which gives the log-likelihood value of the parameter, and also prior function that gives the log density value of the parameter. The density used in the likelihood function is Beta(6,4) since it is our target distribution, and the density used in the prior function is Uniform[0,1] since our start value is from Uniform[0,1]. In addition, since the parameters in Beta distribution have to be larger than 0, for $c>0, \; \phi<1$. 
+
+
+## For c = 1
+
+### Functions 
 
 ```{r}
 a <- 6
@@ -60,14 +65,12 @@ where $\alpha(\phi_{old}, \phi_{new}) = min(1, \frac{p(\phi_{new})q(\phi_{old}|\
 
 Next, we can finally get the chain using metropolis_MCMC function with the startvalue generated from Uniform(0,1). We also generate random values from Beta(6,4) for the comparison.
 
+### Performance of the sampler with BurnIn
 ```{r}
 startvalue <- runif(1, 0, 1)
 chain=metropolis_MCMC(startvalue, 10000, c=1)
 test <- rbeta(10000, 6, 4)
-```
 
-```{r}
-# Performance of the sampler: c = 1 with BurnIn
 par(mfrow=c(1,3))
 test2 <- test[5001:10000]
 burnIn = 5000
@@ -80,8 +83,8 @@ hist(chain[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Cha
 
 Here, we evaluate the performance of the sampler when c = 1 without burn in. The first plot is the trace plot, showing the trace of our chain. The specific explanation of those plots will be covered at the last part. 
 
+### Histogram of the target distribution Beta(6,4) vs. the Chain with burnIn
 ```{r}
-# Histogram of the target distribution Beta(6,4) vs. the Chain with burnIn
 par(mfrow=c(1,2))
 hist(test2, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)", 
      sub = "with BurnIn")
@@ -95,8 +98,8 @@ abline(v=0.6, col="red")
 
 In addition, we can compare the target distribution Beta(6,4) with the histogram of the chain as we can see above. The red line indicates the real mean of the distribution, which is $\frac{6}{4+6}=0.6$. We can check that both histogram looks similar and the mean of the chain is ``r mean(chain[-(1:burnIn),1])`` which is very close to 0.6. This is after we remove some redundant moves from the chain using BurnIn. However, we can still compare the distribution of Beta(6,4) with the whole chain without BurnIn. 
 
+### Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
 ```{r}
-# Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
 par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)", 
      sub = "without BurnIn")
@@ -105,8 +108,7 @@ hist(chain, xlab = "Samples from Chain", main = "Histogram of Chain, c = 1",
      sub = "without BurnIn")
 ```
 
-If we check the difference between the distributions with and without BurnIn. As we can see in the plot, the distribution after BurnIn better suits the target distribution. 
-
+### Density function for the chain vs. Beta(6,4) 
 ```{r}
 par(mfrow = c(2,2))
 plot(density(test), main = "Density of Beta(6, 4)")
@@ -117,17 +119,18 @@ plot(density(chain[-(1:burnIn),1]), main = "Density ft for the Chain (c = 1) aft
 
 Finally, we can implement Kolmogorov-Smirnov test. Accordking to the result, we cannot say that the chain follows Beta(6, 4) distribution since p-value is smaller than 0.05. 
 
+### Kolmogorov-Smirnov Test
+
 ```{r}
-# Kolmogorov-Smirnov Test
 chainks <- sort(chain[-(1:burnIn),1])
-ks.test(chainks, "pbeta", 6, 4)
+ks.test(chainks, test2)
 ```
 
-Next, we repeat the same procedure when c = 0.1, c = 2.5 and c = 10. 
+## For c = 0.1
 
+### Performance of the sampler
 ```{r}
 set.seed(1)
-# Performance of the sampler: c = 0.1
 chain1=metropolis_MCMC(startvalue, 10000, c=0.1)
 par(mfrow=c(1,3))
 acceptance1 = 1-mean(duplicated(chain1[-(1:burnIn),]))
@@ -136,8 +139,10 @@ abline(h=0.6, col="red")
 acf(chain1[-(1:burnIn),1], main = "Autocorrelation plot of Chain, c = 0.1")
 hist(chain1[-(1:burnIn),1], xlab = "Samples from chain", 
      main = "Histogram of Chain, c = 0.1") 
+```
 
-# Histogram of the target distribution Beta(6,4) vs. the Chain after burnIn
+### Histogram of the target distribution Beta(6,4) vs. the Chain after burnIn
+```{r}
 par(mfrow=c(1,2))
 hist(test2, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)", 
      sub = "with BurnIn")
@@ -147,29 +152,39 @@ hist(chain1[-(1:burnIn),1], xlab = "Samples from chain",
      main = "Histogram of Chain, c = 0.1", sub = "with BurnIn") 
 abline(v = mean(chain1[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
+```
 
-# Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
+
+### Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
+```{r}
 par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)",
      sub = "without BurnIn")
 hist(chain1, xlab = "Samples from chain", main = "Histogram of Chain, c = 0.1", 
      sub = "without BurnIn")
+```
 
+### Density function for the chain vs. Beta(6,4) 
+```{r}
 par(mfrow = c(2,2))
 plot(density(test), main = "Density of Beta(6, 4)")
 plot(density(chain1), main = "Density ft for the Chain (c = 0.1)")
 plot(density(test2), main = "Density ft of Beta(6, 4)")
 plot(density(chain1[-(1:burnIn),1]), main = "Density ft for the Chain (c = 0.1) after BurnIn")
+```
+As we can see in the plots, there exists significant discrepancy between the distribution of the chain when c = 0.1 and Beta(6,4) distribution. Moreover, the gap between the mean of the chain and Beta(6,4) distribution is larger than when c = 1. 
 
-# Kolmogorov-Smirnov statistic
+### Kolmogorov-Smirnov statistic
+```{r}
 chain1ks <- sort(chain1[-(1:burnIn),1])
-ks.test(chain1ks, "pbeta", 6, 4)
-
+ks.test(chain1ks, test2)
 ```
 
+## For c = 2.5
+
+### Performance of the sampler
 ```{r}
 set.seed(2)
-# Performance of the sampler: c = 2.5
 chain2=metropolis_MCMC(startvalue, 10000, c=2.5)
 par(mfrow=c(1,3))
 acceptance2 = 1-mean(duplicated(chain2[-(1:burnIn),]))
@@ -178,8 +193,10 @@ abline(h=0.6, col="red")
 acf(chain2[-(1:burnIn),1], main = "Autocorrelation plot of Chain, c = 2.5")
 hist(chain2[-(1:burnIn),1], xlab = "Samples from chain", 
      main = "Histogram of Chain, c = 2.5") 
+```
 
-# Histogram of the target distribution Beta(6,4) vs. the Chain after burnIn
+### Histogram of the target distribution Beta(6,4) vs. the Chain after burnIn
+```{r}
 par(mfrow=c(1,2))
 hist(test2, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)",
      sub = "with BurnIn")
@@ -189,28 +206,41 @@ hist(chain2[-(1:burnIn),1], xlab = "Samples from chain",
      main = "Histogram of Chain, c = 2.5", sub = "with BurnIn") 
 abline(v = mean(chain2[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
+```
 
-# Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
+
+### Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
+```{r}
+par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)", 
      sub = "without BurnIn")
 hist(chain2, xlab = "Samples from chain", main = "Histogram of Chain, c = 2.5", 
      sub = "without BurnIn")
+```
 
+### Density function for the chain vs. Beta(6,4) 
+```{r}
 par(mfrow = c(2,2))
 plot(density(test), main = "Density of Beta(6, 4)")
 plot(density(chain2), main = "Density ft for the Chain (c = 2.5)")
 plot(density(test2), main = "Density ft of Beta(6, 4)")
 plot(density(chain2[-(1:burnIn),1]), main = "Density ft for the Chain (c = 2.5) after BurnIn")
-
-# Kolmogorov-Smirnov statistic
-chain2ks <- sort(chain2[-(1:burnIn),1])
-ks.test(chain2ks, "pbeta", 6, 4)
-
 ```
 
+According to the plots, we can check that the distribution after BurnIn has similar distribution with Beta(6,4) compared to when c = 0.1. In addition, the mean of the chain and the mean of Beta(6,4), which is 0.6 are almost equal. 
+
+### Kolmogorov-Smirnov statistic
+```{r}
+chain2ks <- sort(chain2[-(1:burnIn),1])
+ks.test(chain2ks, test2)
+```
+
+
+* For c = 10
+
+### Performance of the sampler: c = 10
 ```{r}
 set.seed(3)
-# Performance of the sampler: c = 10
 chain3=metropolis_MCMC(startvalue, 10000, c=10)
 par(mfrow=c(1,3))
 acceptance3 = 1-mean(duplicated(chain3[-(1:burnIn),]))
@@ -219,8 +249,11 @@ abline(h=0.6, col="red")
 acf(chain3[-(1:burnIn),1], main = "Autocorrelation plot of Chain, c = 10")
 hist(chain3[-(1:burnIn),1], xlab = "Samples from chain", 
      main = "Histogram of Chain, c = 10") 
+```
 
-# Histogram of the target distribution Beta(6,4) vs. the Chain after burnIn
+### Histogram of the target distribution Beta(6,4) vs. the Chain after burnIn
+```{r}
+par(mfrow=c(1,2))
 hist(test2, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)",
      sub = "with BurnIn")
 abline(v=mean(test2), col="blue")
@@ -229,32 +262,54 @@ hist(chain3[-(1:burnIn),1], xlab = "Samples from chain",
      main = "Histogram of Chain, c = 10", sub = "with BurnIn") 
 abline(v = mean(chain3[-(1:burnIn),1]), col="blue")
 abline(v=0.6, col="red")
+```
 
-# Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
+### Histogram of the chain vs. the target distribution Beta(6,4) without BurnIn
+```{r}
 par(mfrow=c(1,2))
 hist(test, xlab = "Samples from Beta(6, 4)", main = "Histogram of Beta(6, 4)",
      sub = "without BurnIn")
 hist(chain3, xlab = "Samples from chain", main = "Histogram of Chain, c = 10",
      sub = "without BurnIn")
+```
 
+### Density function for the chain vs. Beta(6,4) 
+```{r}
 par(mfrow = c(2,2))
 plot(density(test), main = "Density of Beta(6, 4)")
 plot(density(chain3), main = "Density ft for the Chain (c = 10)")
 plot(density(test2), main = "Density ft of Beta(6, 4)")
 plot(density(chain3[-(1:burnIn),1]), main = "Density ft for the Chain (c = 10) after BurnIn")
-
-# Kolmogorov-Smirnov statistic
-chain3ks <- sort(chain3[-(1:burnIn),1])
-ks.test(chain3ks, "pbeta", 6, 4)
-
 ```
 
+According to the plot, the shape of the distributions of the chain and Beta(6,4) seem to be similar, but the gap between the mean of the chain and Beta(6,4) distribution is not negligible. That leads to the p-value of K-S test to be smaller than in c = 2.5. 
+
+### Kolmogorov-Smirnov statistic
+```{r}
+chain3ks <- sort(chain3[-(1:burnIn),1])
+ks.test(chain3ks, test2)
+```
+
+## Acceptance rates
 ```{r}
 acceptance
 acceptance1
 acceptance2
 acceptance3
+```
 
+## Trace plot for chains
+```{r}
+par(mfrow=c(4,1), mar= c(2,3,3,2))
+plot(chain[-(1:burnIn),1], type='l', main = "Trace plot of Chain, c = 1", xlab = "")
+plot(chain1[-(1:burnIn),1], type='l', main = "Trace plot of Chain, c = 0.1", xlab = "")
+plot(chain2[-(1:burnIn),1], type='l', main = "Trace plot of Chain, c = 2.5", xlab = "")
+plot(chain3[-(1:burnIn),1], type='l', main = "Trace plot of Chain, c = 10", xlab = "")
+```
+
+
+## ACF for chains
+```{r}
 par(mfrow=c(2,2))
 acf(chain[-(1:burnIn),1], main = "ACF for c = 1")
 acf(chain1[-(1:burnIn),1], main = "ACF for c = 0.1")
@@ -263,6 +318,6 @@ acf(chain3[-(1:burnIn),1], main = "ACF for c = 10")
 ```
 
 As we can see in the result, as c increases, acceptance rate increases. This is because the proposal distribution $\phi_{prop}|\phi_{old} \sim Beta(c\phi_{old}, \; c(1-\phi_{old}))$ is getting narrower compare to the target distribution as c increases. That is, for c = 0.1, the proposal distribution is wider than the target distribution. 
-In addition, according to the trace plot for c = 0.1, we can check that the chain tends to stay at same place more than when c = 2.5 and c = 10. This implies that c has lower acceptance rate. Next, if we look at the autocorrelation plot, we can check that there exists high autocorrelation in the chain, and that causes the chain to stay where it was. 
-For c = 2.5 and c = 10, we can see in the autocorrelation has dropped faster than in c = 0.1, so it implies that the chain tends to move faster as we can check in the trace plot. This indicates that the acceptance rate is higher than c = 0.1 for both cases. However, as we can see in the acceptance rates of 3 cases, the acceptance rate when c = 10 is the highest, implying that the chain for c = 10 moves frequently than when c = 2.5. However, very high acceptance rate is not preferrable, and optimal acceptance rate is 20~30%, as we obtain in c = 1 (which is ``r acceptance``). If we compare among c = 0.1, 2.5, 10, the case when c = 2.5 seems to be the most optimal. This is comparable to the Kolmogorov-Smirnov test p-value, since among those three cases, p-value in c = 2.5 is the highest, implying that it is less likely to reject the null hypothesis that the chain distribution has the same distribution as the target distribution, Beta(6,4). (However, the results of all cases show that they reject the null hypothesis.) 
+In addition, according to the trace plot for c = 0.1, we can check that the chain tends to stay at same place more than when c = 2.5 and c = 10. This implies that c has lower acceptance rate. Next, if we look at the autocorrelation plot, we can check that there exists high autocorrelation in the chain, and that causes the chain to stay where it was. In the trace plot for c = 1, the chain moves more frequently than in c = 0.1, but it is more stationary compared to c = 2.5 and c = 10 cases. In addition, according to the autocorrelation plot of c = 1 case, there exists some kind of autocorrelation after the chain goes on compared to c = 2.5 and c = 10 cases. That leads to the result of the acceptance rate for c = 1 case to be larger than when c = 0.1 but smaller than c = 2.5 and c = 10 cases. 
+For c = 2.5 and c = 10, we can see in the autocorrelation has dropped faster than in c = 0.1, so it implies that the chain tends to move faster as we can check in the trace plot. This indicates that the acceptance rate is higher than c = 0.1 for both cases. However, as we can see in the acceptance rates of 3 cases, the acceptance rate when c = 10 is the highest, implying that the chain for c = 10 moves frequently than when c = 2.5. However, very high acceptance rate is not preferrable, and optimal acceptance rate is 20 ~ 30%, as we obtain in c = 1 (which is ``r acceptance``). If we compare among c = 0.1, 2.5, 10, the case when c = 2.5 seems to be the most optimal. This is comparable to the Kolmogorov-Smirnov test p-value, since among those three cases, p-value in c = 2.5 is the highest, implying that it is less likely to reject the null hypothesis that the chain distribution has the same distribution as the target distribution, Beta(6,4). (However, the results of all cases show that they reject the null hypothesis.) 
 
