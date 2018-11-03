@@ -80,7 +80,6 @@ hist(chain[-(1:burnIn),1], xlab = "Samples from chain", main = "Histogram of Cha
 ```
 
 Here, we evaluate the performance of the sampler when c = 1 without burn in. The first plot is the trace plot, showing the trace of our chain. We can check that the trace plot does not have any trends, and it is well bounded.  
-/# The auto correlation 
 
 ```{r}
 # Histogram of the target distribution Beta(6,4) vs. the Chain with burnIn
@@ -234,15 +233,6 @@ acf(chain2[-(1:burnIn),1], main = "ACF for c = 2.5")
 acf(chain3[-(1:burnIn),1], main = "ACF for c = 10")
 ```
 
-The acceptance rate can be influenced by the proposal function: generally, the closer the proposals are, the larger the acceptance rate. Very high acceptance rates, however, are usually not beneficial: this means that the algorithms is staying at the same point, which results in a suboptimal probing of the parameter space (mixing). It can be shown that acceptance rates between 20% and 30% are optimal for typical applications.
-
-As c increases acceptance rate increases ; 
-Trace plot : diverge trend high in c=0.1 compared to other plots
-Strong autocorrelation such as when $c = 2.5$ or $c = 10$
-strong autocorrelation is related to higher p-value in the k-s test.
-We observe the strongest autocorrelation when $c = 2.5$ compared to when $c = 10$ or $c = 0.1$.
-In addition, p-value for the k-s test is highest when $c = 2.5$ meaning the chain resembles Beta(6, 4) closest when $c = 2.5$.
-However, as the value of $c$ increases, we observe that the acceptance rate increases.
-We can deduce from such observation that the proposal function may be different from Beta(6, 4) and high acceptance rate would actually make the samples drawn from the algorithm deviate from Beta(6, 4), out target distribution.
-low dependence (i.e.,low autocorrelation) - leads to better convergence toward stationary posterior
-                                          - leads to lower uncertainty in results from posterior draws
+As we can see in the result, as c increases, acceptance rate increases. This is because the proposal distribution $\phi_{prop}|\phi_{old} \sim Beta(c\phi_{old}, \; c(1-\phi_{old}))$ is getting narrower compare to the target distribution as c increases. That is, for c = 0.1, the proposal distribution is wider than the target distribution. 
+In addition, according to the trace plot for c = 0.1, we can check that the chain tends to stay at same place more than when c = 2.5 and c = 10. This implies that c has lower acceptance rate. Next, if we look at the autocorrelation plot, we can check that there exists high autocorrelation in the chain, and the chain to stay where it was. 
+For c = 2.5 and c = 10, we can see in the autocorrelation has dropped faster than in c = 0.1, so it implies that the chain tends to move faster as we can check in the trace plot. This indicates that the acceptance rate is higher than c = 0.1 for both cases. However, as we can see in the acceptance rates of 3 cases, the acceptance rate when c = 10 is the highest, implying that the chain for c = 10 moves frequently than when c = 2.5. However, very high acceptance rate is not preferrable, and optimal acceptance rate is 20~30%, as we obtain in c = 1 (which is ``r acceptance``). If we compare among c = 0.1, 2.5, 10, the case when c = 2.5 seems to be the most optimal. This is comparable to the Kolmogorov-Smirnov test p-value, since among those three cases, p-value in c = 2.5 is the highest, implying that it is less likely to reject the null hypothesis that the chain distribution has the same distribution as the target distribution, Beta(6,4). (However, the results of all cases show that they reject the null hypothesis.) 
